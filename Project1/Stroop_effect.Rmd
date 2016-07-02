@@ -1,6 +1,8 @@
 ---
 title: "Stroop_effect"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(reshape2)
 library(ggplot2)
-se <- read.csv("~/Study/Data_Analyst/Project1/stroopdata.csv",sep=",")
+se <- read.csv("~/Study/Data_Analyst/Projects/Project1/stroopdata.csv",sep=",")
 str(se)
 summary(se)
 apply(se, 2, sd)
