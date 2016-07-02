@@ -1,0 +1,73 @@
+---
+title: "Stroop_effect"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries and Stroop experimental data into R
+```{r}
+library(reshape2)
+library(ggplot2)
+se <- read.csv("~/Study/Data_Analyst/Project1/stroopdata.csv",sep=",")
+str(se)
+summary(se)
+apply(se, 2, sd)
+```
+
+### Convert data frame using melt, and plot the distribution of data using boxplot.
+
+```{r}
+mse <- melt(se,variable.name = "cong", value.name="time")
+mse$index <- rep(seq(1,24),2)
+```
+
+### Now make some plots:
+```{r}
+# boxplot
+ggplot(data = mse) +
+  geom_boxplot(aes(x=cong, y=time)) +
+  xlab("Congruency") + ylab("time") +
+  #coord_cartesian(ylim=c(10,30)) +
+  ggtitle("Distributions of recognition time for both groups") +
+  theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_light()
+# barplot
+ggplot(data = mse) +
+  geom_bar(aes(x=index, y=time, fill=cong),stat = "identity",position="dodge") +
+  xlab("Participant") + ylab("Time") +
+  #coord_cartesian(ylim=c(10,30)) +
+  ggtitle("Distributions of recognition time for both groups") +
+  theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_light() +
+  scale_fill_discrete(name="Congruency",
+                      breaks=c("Congruent","Incongruent"),
+                      labels=c("Yes","No"))
+
+# lineplot
+ggplot(data = se) +
+  geom_line(aes(y=Congruent, x=seq(Congruent),
+                color="Congruent",linetype="Congruent")) + 
+  geom_line(aes(y=Incongruent, x = seq(Incongruent), 
+                color="Incongruent", linetype="Incongruent")) +
+  geom_line(aes(y = Incongruent - Congruent, x = seq(Incongruent), 
+                color="Diff",linetype="Diff")) +
+  scale_colour_manual(name="Line",
+                      values=c(Congruent="red", Incongruent="blue",Diff="black")) +
+  scale_linetype_manual(name="Line", 
+                      values=c(Congruent="solid",Incongruent="solid",Diff="dashed")) +
+  xlab("") + ylab("reaction time") + ggtitle("Line plot of reaction time")
+
+ggplot(data = se, aes(Congruent, Incongruent)) + geom_point() + geom_smooth()
+```
+
+### Paired t-test on the data.
+
+```{r}
+t_test <- t.test(x = se$Congruent, y=se$Incongruent,
+       paired = TRUE,conf.level = 0.95)
+str(t_test)
+t_test
+```
